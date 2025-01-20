@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Verwaltung</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Login/Register Container -->
+    <div id="auth-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <input type="text" id="login-username" placeholder="Benutzername" required>
+            <input type="password" id="login-password" placeholder="Passwort" required>
+            <button type="submit">Einloggen</button>
+        </form>
+
+        <h2>Registrierung</h2>
+        <form id="register-form">
+            <input type="text" id="register-username" placeholder="Benutzername" required>
+            <input type="text" id="register-firstname" placeholder="Vorname" required>
+            <input type="text" id="register-lastname" placeholder="Nachname" required>
+            <input type="password" id="register-password" placeholder="Passwort" required>
+            <button type="submit">Registrieren</button>
+        </form>
+    </div>
+
+    <!-- Equipment Container (initially hidden) -->
+    <div id="equipment-container" style="display: none;">
+        <h2>Verfügbare Geräte</h2>
+        <div id="available-equipment"></div>
+
+        <h2>Meine ausgeliehenen Geräte</h2>
+        <div id="borrowed-equipment"></div>
+
+        <button id="logout-btn">Abmelden</button>
+    </div>
+
+    <script src="js/user.js"></script>
+</body>
+</html> 

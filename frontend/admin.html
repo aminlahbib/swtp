@@ -1,0 +1,27 @@
+mit dem Backend beginnen<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Verwaltung - Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="admin-container">
+        <h2>Neues Gerät hinzufügen</h2>
+        <form id="add-equipment-form">
+            <input type="text" id="inventarnummer" placeholder="Inventarnummer" required>
+            <input type="text" id="bezeichnung" placeholder="Bezeichnung" required>
+            <button type="submit">Gerät hinzufügen</button>
+        </form>
+
+        <h2>Aktuelle Ausleihen</h2>
+        <div id="current-loans"></div>
+
+        <h2>Vergangene Ausleihen</h2>
+        <div id="past-loans"></div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html> 
