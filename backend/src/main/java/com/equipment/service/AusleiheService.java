@@ -1,5 +1,6 @@
 package com.equipment.service;
 
+import com.equipment.exception.EquipmentException;
 import com.equipment.model.Ausleihe;
 import com.equipment.model.Benutzer;
 import com.equipment.model.Equipment;
@@ -23,35 +24,32 @@ public class AusleiheService {
     private final EquipmentRepository equipmentRepository;
     private final LogItemRepository logItemRepository;
 
-//    public List<Equipment> getAvailableEquipment() {
-//        List<Integer> ausgeliehenIds = ausleiheRepository.findAll().stream()
-//                .map(a -> a.getEquipment().getId())
-//                .collect(Collectors.toList());
-//        return equipmentRepository.findByIdNotIn(ausgeliehenIds);
-//    }
-public List<Equipment> getAvailableEquipment() {
-    List<Integer> ausgeliehenIds = ausleiheRepository.findAll().stream()
-            .map(a -> a.getEquipment().getId())
-            .collect(Collectors.toList());
+    public List<Equipment> getAvailableEquipment() {
+        try {
+            List<Integer> ausgeliehenIds = ausleiheRepository.findAll().stream()
+                    .map(a -> a.getEquipment().getId())
+                    .collect(Collectors.toList());
 
-    if (ausgeliehenIds.isEmpty()) {
-        // If no equipment is loaned out, return all equipment
-        return equipmentRepository.findAll();
-    } else {
-        // Otherwise, return equipment whose IDs are not in the list of loaned-out equipment
-        return equipmentRepository.findByIdNotIn(ausgeliehenIds);
-    }
-}
-
-    public List<Ausleihe> getBorrowedEquipmentForCurrentUser() {
-        Benutzer currentUser = (Benutzer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ausleiheRepository.findByBenutzerId(currentUser.getId());
+            if (ausgeliehenIds.isEmpty()) {
+                return equipmentRepository.findAll();
+            } else {
+                return equipmentRepository.findByIdNotIn(ausgeliehenIds);
+            }
+        } catch (Exception e) {
+            throw EquipmentException.badRequest("Fehler beim Laden der verfügbaren Geräte: " + e.getMessage());
+        }
     }
 
     @Transactional
     public void borrowEquipment(Integer equipmentId) {
         Equipment equipment = equipmentRepository.findById(equipmentId)
-                .orElseThrow(() -> new RuntimeException("Equipment nicht gefunden"));
+                .orElseThrow(() -> EquipmentException.notFound("Equipment nicht gefunden"));
+
+        // Check if equipment is already borrowed
+        if (ausleiheRepository.findAll().stream()
+                .anyMatch(a -> a.getEquipment().getId().equals(equipmentId))) {
+            throw EquipmentException.badRequest("Equipment ist bereits ausgeliehen");
+        }
 
         Benutzer currentUser = (Benutzer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -60,7 +58,11 @@ public List<Equipment> getAvailableEquipment() {
         ausleihe.setEquipment(equipment);
         ausleihe.setAusleihe(LocalDateTime.now());
 
-        ausleiheRepository.save(ausleihe);
+        try {
+            ausleiheRepository.save(ausleihe);
+        } catch (Exception e) {
+            throw EquipmentException.badRequest("Fehler beim Ausleihen des Equipments: " + e.getMessage());
+        }
     }
 
     @Transactional
@@ -71,7 +73,7 @@ public List<Equipment> getAvailableEquipment() {
                 .filter(a -> a.getEquipment().getId().equals(equipmentId))
                 .filter(a -> a.getBenutzer().getId().equals(currentUser.getId()))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Ausleihe nicht gefunden"));
+                .orElseThrow(() -> EquipmentException.notFound("Keine aktive Ausleihe für dieses Equipment gefunden"));
 
         LogItem logItem = new LogItem();
         logItem.setBenutzername(ausleihe.getBenutzer().getBenutzername());
@@ -80,7 +82,20 @@ public List<Equipment> getAvailableEquipment() {
         logItem.setAusleihdatum(ausleihe.getAusleihe());
         logItem.setRueckgabedatum(LocalDateTime.now());
 
-        logItemRepository.save(logItem);
-        ausleiheRepository.delete(ausleihe);
+        try {
+            logItemRepository.save(logItem);
+            ausleiheRepository.delete(ausleihe);
+        } catch (Exception e) {
+            throw EquipmentException.badRequest("Fehler bei der Rückgabe des Equipments: " + e.getMessage());
+        }
+    }
+
+    public List<Ausleihe> getBorrowedEquipmentForCurrentUser() {
+        try {
+            Benutzer currentUser = (Benutzer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return ausleiheRepository.findByBenutzerId(currentUser.getId());
+        } catch (Exception e) {
+            throw EquipmentException.badRequest("Fehler beim Laden der ausgeliehenen Geräte: " + e.getMessage());
+        }
     }
 } 

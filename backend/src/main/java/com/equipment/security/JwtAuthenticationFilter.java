@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (benutzername != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             var benutzer = benutzerRepository.findByBenutzername(benutzername).orElse(null);
-            
+
             if (benutzer != null) {
                 var authToken = new UsernamePasswordAuthenticationToken(
                     benutzer,
@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-        
+
         filterChain.doFilter(request, response);
     }
-} 
+}
