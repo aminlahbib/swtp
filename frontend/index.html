@@ -1,44 +1,52 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equipment Verwaltung</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Equipment Management System</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <!-- Login/Register Container -->
-    <div id="auth-container">
+<div class="container">
+    <h1>Equipment Management System</h1>
+
+    <!-- Login Form -->
+    <div id="login-form">
         <h2>Login</h2>
-        <form id="login-form">
-            <input type="text" id="login-username" placeholder="Benutzername" required>
-            <input type="password" id="login-password" placeholder="Passwort" required>
-            <button type="submit">Einloggen</button>
-        </form>
+        <form id="loginForm">
+            <label for="loginUsername">Username:</label>
+            <input type="text" id="loginUsername" name="username" required>
 
-        <h2>Registrierung</h2>
-        <form id="register-form">
-            <input type="text" id="register-username" placeholder="Benutzername" required>
-            <input type="text" id="register-firstname" placeholder="Vorname" required>
-            <input type="text" id="register-lastname" placeholder="Nachname" required>
-            <input type="password" id="register-password" placeholder="Passwort" required>
-            <button type="submit">Registrieren</button>
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" name="password" required>
+
+            <button type="submit">Login</button>
         </form>
+        <p id="loginMessage"></p>
     </div>
 
+    <!-- Registration Form -->
+    <div id="register-form">
+        <h2>Register</h2>
+        <form id="registerForm">
+            <label for="registerUsername">Username:</label>
+            <input type="text" id="registerUsername" name="username" required>
 
+            <label for="registerFirstName">First Name:</label>
+            <input type="text" id="registerFirstName" name="firstName" required>
 
-    <!-- Equipment Container (initially hidden) -->
-    <div id="equipment-container" style="display: none;">
-        <h2>Verfügbare Geräte</h2>
-        <div id="available-equipment"></div>
+            <label for="registerLastName">Last Name:</label>
+            <input type="text" id="registerLastName" name="lastName" required>
 
-        <h2>Meine ausgeliehenen Geräte</h2>
-        <div id="borrowed-equipment"></div>
+            <label for="registerPassword">Password:</label>
+            <input type="password" id="registerPassword" name="password" required>
 
-        <button id="logout-btn">Abmelden</button>
+            <button type="submit">Register</button>
+        </form>
+        <p id="registerMessage"></p>
     </div>
+</div>
 
-    <script src="js/user.js"></script>
+<script src="js/scripts.js"></script>
 </body>
-</html> 
+</html>
