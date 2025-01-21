@@ -26,20 +26,19 @@ public class BenutzerService {
         if (benutzerRepository.existsByBenutzername(request.getBenutzername())) {
             throw new RuntimeException("Benutzername bereits vergeben");
         }
-        //better error handling
-//        if (benutzerRepository.existsByBenutzername(request.getBenutzername())) {
-//            throw new UsernameAlreadyExistsException("Benutzername bereits vergeben");
-//        }
 
+        // Generate a salt
         byte[] salt = generateSalt();
+
+        // Hash the password with the salt
         byte[] hashedPassword = hashPassword(request.getPassword(), salt);
 
         Benutzer benutzer = new Benutzer();
         benutzer.setBenutzername(request.getBenutzername());
         benutzer.setVorname(request.getVorname());
         benutzer.setNachname(request.getNachname());
-        benutzer.setPasswordSalt(salt);
-        benutzer.setPasswordHash(hashedPassword);
+        benutzer.setPasswordHash(hashedPassword); // Store the hashed password
+        benutzer.setPasswordSalt(salt); // Store the salt
 
         benutzerRepository.save(benutzer);
 
@@ -53,20 +52,16 @@ public class BenutzerService {
         Benutzer benutzer = benutzerRepository.findByBenutzername(request.getBenutzername())
                 .orElseThrow(() -> {
                     log.debug("User not found: {}", request.getBenutzername());
-                    return new BadCredentialsException("Ungültige Anmeldedaten - Benutzer nicht gefunden");
+                    return new BadCredentialsException("Ungültige Anmeldedaten");
                 });
 
         log.debug("User found: {}", benutzer.getBenutzername());
 
-        // Hash the provided password with the user's salt
-        byte[] hashedPassword = hashPassword(request.getPassword(), benutzer.getPasswordSalt());
-        log.debug("Hashed password from request: {}", new String(hashedPassword));
-
-        // Compare the hashed password with the stored password hash
-        if (!comparePasswords(hashedPassword, benutzer.getPasswordHash())) {
+        // Compare the provided password with the stored password hash and salt
+        if (!comparePasswords(request.getPassword(), benutzer.getPasswordSalt(), benutzer.getPasswordHash())) {
             log.debug("Incorrect password for user: {}", request.getBenutzername());
             log.debug("Stored password hash: {}", new String(benutzer.getPasswordHash()));
-            throw new BadCredentialsException("Ungültige Anmeldedaten - Falsches Passwort");
+            throw new BadCredentialsException("Ungültige Anmeldedaten");
         }
 
         log.debug("Login successful for user: {}", request.getBenutzername());
@@ -82,10 +77,16 @@ public class BenutzerService {
     }
 
     private byte[] hashPassword(String password, byte[] salt) {
-        return passwordEncoder.encode(password + new String(salt)).getBytes();
+        // Combine the password and salt as a single string
+        String passwordWithSalt = password + new String(salt);
+        // Hash the combined value using BCryptPasswordEncoder
+        return passwordEncoder.encode(passwordWithSalt).getBytes();
     }
 
-    private boolean comparePasswords(byte[] password1, byte[] password2) {
-        return java.util.Arrays.equals(password1, password2);
+    private boolean comparePasswords(String password, byte[] salt, byte[] storedHash) {
+        // Combine the password and salt as a single string
+        String passwordWithSalt = password + new String(salt);
+        // Compare the combined value with the stored hash
+        return passwordEncoder.matches(passwordWithSalt, new String(storedHash));
     }
 }
