@@ -1,0 +1,82 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #eef2f7;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    max-width: 360px;
+    width: 100%;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.5em;
+    color: #333333;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+label {
+    font-size: 0.9em;
+    color: #555555;
+    text-align: left;
+}
+
+input {
+    padding: 10px;
+    border: 1px solid #d1d1d1;
+    border-radius: 5px;
+    font-size: 0.95em;
+}
+
+input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+button, .button {
+    padding: 12px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.register-prompt {
+    font-size: 0.9em;
+    margin-top: 15px;
+    color: #666666;
+}
+
+.register-prompt a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.register-prompt a:hover {
+    text-decoration: underline;
+}
