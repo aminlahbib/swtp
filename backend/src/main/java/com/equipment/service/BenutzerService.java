@@ -7,12 +7,14 @@ import com.equipment.model.Benutzer;
 import com.equipment.repository.BenutzerRepository;
 import com.equipment.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BenutzerService {
@@ -24,6 +26,10 @@ public class BenutzerService {
         if (benutzerRepository.existsByBenutzername(request.getBenutzername())) {
             throw new RuntimeException("Benutzername bereits vergeben");
         }
+        //better error handling
+//        if (benutzerRepository.existsByBenutzername(request.getBenutzername())) {
+//            throw new UsernameAlreadyExistsException("Benutzername bereits vergeben");
+//        }
 
         byte[] salt = generateSalt();
         byte[] hashedPassword = hashPassword(request.getPassword(), salt);
@@ -42,14 +48,28 @@ public class BenutzerService {
     }
 
     public AuthResponse login(AuthRequest request) {
-        Benutzer benutzer = benutzerRepository.findByBenutzername(request.getBenutzername())
-                .orElseThrow(() -> new BadCredentialsException("Ungültige Anmeldedaten"));
+        log.debug("Attempting to log in user: {}", request.getBenutzername());
 
+        Benutzer benutzer = benutzerRepository.findByBenutzername(request.getBenutzername())
+                .orElseThrow(() -> {
+                    log.debug("User not found: {}", request.getBenutzername());
+                    return new BadCredentialsException("Ungültige Anmeldedaten - Benutzer nicht gefunden");
+                });
+
+        log.debug("User found: {}", benutzer.getBenutzername());
+
+        // Hash the provided password with the user's salt
         byte[] hashedPassword = hashPassword(request.getPassword(), benutzer.getPasswordSalt());
+        log.debug("Hashed password from request: {}", new String(hashedPassword));
+
+        // Compare the hashed password with the stored password hash
         if (!comparePasswords(hashedPassword, benutzer.getPasswordHash())) {
-            throw new BadCredentialsException("Ungültige Anmeldedaten");
+            log.debug("Incorrect password for user: {}", request.getBenutzername());
+            log.debug("Stored password hash: {}", new String(benutzer.getPasswordHash()));
+            throw new BadCredentialsException("Ungültige Anmeldedaten - Falsches Passwort");
         }
 
+        log.debug("Login successful for user: {}", request.getBenutzername());
         String token = jwtService.generateToken(benutzer);
         return new AuthResponse(token);
     }
