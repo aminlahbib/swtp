@@ -44,6 +44,7 @@ async function loadAvailableEquipment() {
         const tableBody = document.getElementById("availableEquipmentTable").getElementsByTagName("tbody")[0];
         tableBody.innerHTML = ""; // Clear existing rows
 
+        // Populate the table with equipment data
         data.forEach(equipment => {
             const row = tableBody.insertRow();
             row.insertCell().textContent = equipment.id;

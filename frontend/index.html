@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equipment Management System</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
 <div class="container">
@@ -22,7 +23,7 @@
 
             <button type="submit">Login</button>
         </form>
-        <p id="loginMessage"></p>
+        <p id="loginMessage" class="error-message"></p>
     </div>
 
     <!-- Registration Form -->
@@ -43,10 +44,14 @@
 
             <button type="submit">Register</button>
         </form>
-        <p id="registerMessage"></p>
+        <p id="registerMessage" class="error-message"></p>
     </div>
 </div>
 
-<script src="js/scripts.js"></script>
+<script src="js/api.js" type="module"></script>
+<script src="js/scripts.js" type="module"></script>
+<script src="js/router.js" type="module"></script>
+<script src="js/register.js" type="module"></script>
+<script src="js/login.js" type="module"></script>
 </body>
 </html>

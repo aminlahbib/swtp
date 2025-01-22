@@ -1,8 +1,5 @@
-import { login, register } from "./api.js";
+import { register } from "./api.js";
 import { navigateTo } from "./router.js";
-
-console.log("Scripts loaded");
-
 
 // Validate registration form inputs
 const validateRegisterForm = (username, firstName, lastName, password) => {
@@ -18,59 +15,47 @@ const validateRegisterForm = (username, firstName, lastName, password) => {
     if (password.length < 6) {
         return "Password must be at least 6 characters.";
     }
-    return null;
+    return null; // No validation errors
 };
 
-// Login Form Submission
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const username = document.getElementById("loginUsername").value;
-    const password = document.getElementById("loginPassword").value;
-
-    const validationError = validateLoginForm(username, password);
-    if (validationError) {
-        document.getElementById("loginMessage").textContent = validationError;
-        return;
-    }
-
-    try {
-        const data = await login(username, password);
-        if (data.token) {
-            localStorage.setItem("token", data.token);
-            navigateTo("/benutzer-dashboard");
-        } else {
-            document.getElementById("loginMessage").textContent = data.message || "Login failed.";
-        }
-    } catch (error) {
-        document.getElementById("loginMessage").textContent = error.message || "An error occurred. Please try again.";
-    }
-});
-
-// Registration Form Submission
+// Handle registration form submission
 document.getElementById("registerForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    // Get form inputs
     const username = document.getElementById("registerUsername").value;
     const firstName = document.getElementById("registerFirstName").value;
     const lastName = document.getElementById("registerLastName").value;
     const password = document.getElementById("registerPassword").value;
 
+    // Validate inputs
     const validationError = validateRegisterForm(username, firstName, lastName, password);
     if (validationError) {
         document.getElementById("registerMessage").textContent = validationError;
-        return;
+        return; // Stop if validation fails
     }
 
+    // Clear any previous error messages
+    document.getElementById("registerMessage").textContent = "";
+
     try {
+        // Call the register API
         const data = await register(username, firstName, lastName, password);
+
+        // Handle the response
         if (data.token) {
+            // Store the token in localStorage
             localStorage.setItem("token", data.token);
+
+            // Redirect to the user dashboard
             navigateTo("/benutzer-dashboard");
         } else {
+            // Display error message from the backend
             document.getElementById("registerMessage").textContent = data.message || "Registration failed.";
         }
     } catch (error) {
+        // Handle network or API errors
+        console.error("Registration error:", error);
         document.getElementById("registerMessage").textContent = error.message || "An error occurred. Please try again.";
     }
 });
