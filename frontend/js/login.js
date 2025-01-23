@@ -12,6 +12,25 @@ const validateLoginForm = (username, password) => {
     return null; // No validation errors
 };
 
+// Function to decode a JWT token
+const decodeJwt = (token) => {
+    try {
+        // Split the token into its parts (header, payload, signature)
+        const base64Url = token.split('.')[1]; // Get the payload part
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Convert to base64
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        ); // Decode the payload
+        return JSON.parse(jsonPayload); // Parse the payload as JSON
+    } catch (error) {
+        console.error("Error decoding JWT token:", error);
+        return null;
+    }
+};
+
 // Handle login form submission
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -36,18 +55,38 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
         // Handle the response
         if (data.token) {
-            // Store the token in localStorage
-            localStorage.setItem("token", data.token);
+            // Decode the JWT token
+            const decodedToken = decodeJwt(data.token);
 
-            // Redirect to the user dashboard
-            navigateTo("/benutzer-dashboard");
+            if (decodedToken) {
+                // Store the token and username in sessionStorage
+                sessionStorage.setItem("token", data.token);
+                sessionStorage.setItem("username", decodedToken.sub); // Assuming 'sub' contains the username
+
+                // Redirect to the equipment dashboard
+                navigateTo("templates/Equipment-Dashboard");
+            } else {
+                // Handle token decoding failure
+                document.getElementById("loginMessage").textContent = "An error occurred. Please try again.";
+            }
         } else {
             // Display error message from the backend
             document.getElementById("loginMessage").textContent = data.message || "Login failed.";
         }
     } catch (error) {
+
         // Handle network or API errors
         console.error("Login error:", error);
-        document.getElementById("loginMessage").textContent = error.message || "An error occurred. Please try again.";
+
+        // Display the backend error message to the user
+        if (error.message === "Ungültige Anmeldedaten") {
+            document.getElementById("loginMessage").textContent = "Invalid username. Please try again.";
+            document.getElementById("loginUsername").classList.add("invalid");
+        } else if (error.message === "Ungültige Password") {
+            document.getElementById("loginMessage").textContent = error.message || "Invalid password. Please try again.";
+            document.getElementById("loginPassword").classList.add("invalid");
+        } else{
+            document.getElementById("loginMessage").textContent = error.message || "An error occurred. Please try again.";
+        }
     }
 });

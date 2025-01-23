@@ -3,7 +3,7 @@ const routes = {
     "/login": "index.html",
     "/register": "index.html",
     "/admin-dashboard": "templates/Admin-Dashboard.html",
-    "/benutzer-dashboard": "templates/Benutzer-Dashboard.html",
+    "/equipment-dashboard": "templates/Equipment-Dashboard.html", // Combined dashboard
     "/404": "templates/404.html",
 };
 
@@ -20,9 +20,9 @@ export const navigateTo = (path) => {
                 loadAvailableEquipment();
                 loadCurrentLoans();
                 loadLoanHistory();
-            } else if (path === "/benutzer-dashboard") {
-                loadAvailableEquipment();
-                loadBorrowedEquipment();
+            } else if (path === "/equipment-dashboard") {
+                loadAvailableEquipment(); // Load equipment data for the equipment dashboard
+                loadBorrowedEquipment(); // Load borrowed equipment for the user
             }
         })
         .catch((error) => {
