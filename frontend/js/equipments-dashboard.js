@@ -3,10 +3,55 @@ import { getAvailableEquipment, getMyBorrowedEquipment, borrowEquipment, returnE
 
 document.getElementById('equipments-dashboard-script').onload = async function () {
     showNavbar();
-    displayAccessToken();
+    displayUserInfo(); // Display user info (username and token)
     await loadEquipmentData();
     addEventListeners();
 };
+
+// Function to decode the JWT token manually
+function decodeToken(token) {
+    try {
+        // Split the token into its three parts
+        const [header, payload, signature] = token.split('.');
+
+        // Decode the payload (base64 URL decode)
+        const decodedPayload = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+
+        return decodedPayload;
+    } catch (error) {
+        console.error("Failed to decode token:", error);
+        return null;
+    }
+}
+
+// Function to display user info (username and token)
+function displayUserInfo() {
+    const token = sessionStorage.getItem("authentication_token");
+    if (token) {
+        const decodedToken = decodeToken(token);
+        if (decodedToken) {
+            const benutzername = decodedToken.benutzername; // Extract the username
+            const jwtExpiration = new Date(decodedToken.exp * 1000); // Convert expiration time to a readable date
+
+            // Create a div to display the info
+            const userInfoDiv = document.createElement("div");
+            userInfoDiv.id = "user-info";
+            userInfoDiv.className = "user-info";
+            userInfoDiv.innerHTML = `
+                <h2>Welcome, ${benutzername}!</h2>
+                <p>Token Expiration: ${jwtExpiration}</p>
+                <p><strong>Token:</strong></p>
+                <div class="token-container">
+                    <code>${token}</code>
+                </div>
+            `;
+
+            // Insert the div into the container
+            const container = document.getElementById("container");
+            container.insertBefore(userInfoDiv, container.firstChild);
+        }
+    }
+}
 
 async function loadEquipmentData() {
     try {
@@ -106,16 +151,16 @@ async function handleReturnClick(equipmentId) {
         alert(error.message); // Display the backend error message
     }
 }
-function displayAccessToken() {
-    const token = sessionStorage.getItem("authentication_token");
-    if (token) {
-        const tokenContainer = document.createElement("div");
-        tokenContainer.id = "token-container";
-        tokenContainer.className = "token-container";
-        tokenContainer.innerHTML = `<strong>Access Token:</strong> ${token}`;
-        document.getElementById("container").insertBefore(tokenContainer, document.getElementById("container").firstChild);
-    }
-}
+// function displayAccessToken() {
+//     const token = sessionStorage.getItem("authentication_token");
+//     if (token) {
+//         const tokenContainer = document.createElement("div");
+//         tokenContainer.id = "token-container";
+//         tokenContainer.className = "token-container";
+//         tokenContainer.innerHTML = `<strong>Access Token:</strong> ${token}`;
+//         document.getElementById("container").insertBefore(tokenContainer, document.getElementById("container").firstChild);
+//     }
+// }
 
 // Debounce function to limit the rate of function calls
 function debounce(func, wait) {

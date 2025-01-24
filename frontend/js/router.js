@@ -1,15 +1,21 @@
 window.onload = function() {
-    // Get the route the user is trying to access.
-    const path = window.location.pathname.split("/");
+    const hash = window.location.hash.substring(1); // Remove the "#"
+    const path = hash.split("/");
+    console.log("Hash Path:", path); // Debugging
 
     // Redirect the user based on what they have typed.
     switch(path[1]) {
         case "":
-            // Redirect the user to the login page if they are not authenticated.
             if(sessionStorage.getItem("authentication_token") === null) {
                 loadPage("/login");
             } else {
-                // Redirect to the equipment dashboard if the user is authenticated
+                loadPage("/equipments-dashboard");
+            }
+            break;
+        case "equipments-dashboard":
+            if(sessionStorage.getItem("authentication_token") === null) {
+                loadPage("/login");
+            } else {
                 loadPage("/equipments-dashboard");
             }
             break;
