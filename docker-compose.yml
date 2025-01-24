@@ -1,0 +1,46 @@
+name: notiz_demo
+services:
+  client:
+    image: "nginx:1.25.3-alpine-slim"
+    container_name: notiz_webserver
+    ports:
+      - "8081:80"
+    volumes:
+      - ./web:/usr/share/nginx/html
+    networks:
+      - notiz-network
+
+  dbserver:
+    build: ./db
+    container_name: notiz_dbserver
+    ports:
+      - 3306:3306
+    networks:
+      - notiz-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      retries: 10
+      interval: 3s
+      timeout: 30s
+
+
+
+  springserver:
+    build: ./appServer
+    container_name: notiz_appserver
+    ports:
+      - 8080:8080
+    depends_on:
+      dbserver:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://dbserver:3306/swtp
+      - SPRING_DATASOURCE_USERNAME=root
+    networks:
+      - notiz-network
+
+
+networks:
+  notiz-network:
+    name: notiz-network
+    driver: bridge

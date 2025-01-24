@@ -51,37 +51,61 @@ function populateTable(tableId, data) {
 }
 
 function addEventListeners() {
-    // Add event listeners for borrow buttons
-    document.querySelectorAll('.btn-borrow').forEach(button => {
-        button.addEventListener('click', debounce(async (event) => {
-            const equipmentId = event.target.id.split('-')[1]; // Extract equipment ID from button ID
-            try {
-                await borrowEquipment(equipmentId);
-                alert("Equipment borrowed successfully!");
-                await loadEquipmentData(); // Refresh the equipment lists
-            } catch (error) {
-                console.error("Error borrowing equipment:", error.message);
-                alert("Failed to borrow equipment. Please try again.");
-            }
-        }, 300)); // Debounce to prevent rapid clicks
-    });
+    // Remove existing event listeners to avoid duplicates
+    const availableEquipmentTable = document.getElementById("available-equipment-table");
+    const borrowedEquipmentTable = document.getElementById("borrowed-equipment-table");
 
-    // Add event listeners for return buttons
-    document.querySelectorAll('.btn-return').forEach(button => {
-        button.addEventListener('click', debounce(async (event) => {
-            const equipmentId = event.target.id.split('-')[1]; // Extract equipment ID from button ID
-            try {
-                await returnEquipment(equipmentId);
-                alert("Equipment returned successfully!");
-                await loadEquipmentData(); // Refresh the equipment lists
-            } catch (error) {
-                console.error("Error returning equipment:", error.message);
-                alert(error.message); // Display the backend error message
-            }
-        }, 300)); // Debounce to prevent rapid clicks
-    });
+    if (availableEquipmentTable) {
+        availableEquipmentTable.removeEventListener('click', handleTableClick);
+        availableEquipmentTable.addEventListener('click', handleTableClick);
+    }
+
+    if (borrowedEquipmentTable) {
+        borrowedEquipmentTable.removeEventListener('click', handleTableClick);
+        borrowedEquipmentTable.addEventListener('click', handleTableClick);
+    }
 }
 
+// Handle click events for both tables
+function handleTableClick(event) {
+    const target = event.target;
+
+    // Handle borrow button clicks
+    if (target.classList.contains('btn-borrow')) {
+        const equipmentId = target.id.split('-')[1]; // Extract equipment ID from button ID
+        handleBorrowClick(equipmentId);
+    }
+
+    // Handle return button clicks
+    if (target.classList.contains('btn-return')) {
+        const equipmentId = target.id.split('-')[1]; // Extract equipment ID from button ID
+        handleReturnClick(equipmentId);
+    }
+}
+
+// Handle borrow button clicks
+async function handleBorrowClick(equipmentId) {
+    try {
+        await borrowEquipment(equipmentId);
+        alert("Equipment borrowed successfully!");
+        await loadEquipmentData(); // Refresh the equipment lists
+    } catch (error) {
+        console.error("Error borrowing equipment:", error.message);
+        alert("Failed to borrow equipment. Please try again.");
+    }
+}
+
+// Handle return button clicks
+async function handleReturnClick(equipmentId) {
+    try {
+        await returnEquipment(equipmentId);
+        alert("Equipment returned successfully!");
+        await loadEquipmentData(); // Refresh the equipment lists
+    } catch (error) {
+        console.error("Error returning equipment:", error.message);
+        alert(error.message); // Display the backend error message
+    }
+}
 function displayAccessToken() {
     const token = sessionStorage.getItem("authentication_token");
     if (token) {
