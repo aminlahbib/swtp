@@ -1,46 +1,46 @@
-name: notiz_demo
+version: '3.8'
 services:
-  client:
-    image: "nginx:1.25.3-alpine-slim"
-    container_name: notiz_webserver
-    ports:
-      - "8081:80"
-    volumes:
-      - ./web:/usr/share/nginx/html
-    networks:
-      - notiz-network
-
-  dbserver:
+  db:
     build: ./db
-    container_name: notiz_dbserver
-    ports:
-      - 3306:3306
+    container_name: loan_db
     networks:
-      - notiz-network
+      - loan-network
+    cap_add:
+      - SYS_NICE
+    restart: always
+    ports:
+      - "3306:3306"
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       retries: 10
       interval: 3s
       timeout: 30s
 
-
-
-  springserver:
-    build: ./appServer
-    container_name: notiz_appserver
+  api:
+    build: ./backend
+    container_name: loan_backend
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
-      dbserver:
+      db:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://dbserver:3306/swtp
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/swtp
       - SPRING_DATASOURCE_USERNAME=root
     networks:
-      - notiz-network
+      - loan-network
 
+  ui:
+    image: "nginx:1.25.3-alpine-slim"
+    container_name: loan_frontend
+    ports:
+      - "8081:80"
+    volumes:
+      - ./ui:/usr/share/nginx/html
+    networks:
+      - loan-network
 
 networks:
-  notiz-network:
-    name: notiz-network
+  investment-network:
+    name: "loan-network"
     driver: bridge
