@@ -3,16 +3,10 @@ import { getAvailableEquipment, getMyBorrowedEquipment, borrowEquipment, returnE
 
 document.getElementById('equipments-dashboard-script').onload = async function () {
     showNavbar();
-
-    // Display the access token in the body (if needed)
     displayAccessToken();
-
-    // Load equipment data
     await loadEquipmentData();
-
-    // Add event listeners for borrowing and returning equipment
     addEventListeners();
-}
+};
 
 async function loadEquipmentData() {
     try {
@@ -23,6 +17,9 @@ async function loadEquipmentData() {
         // Fetch borrowed equipment for the current user
         const borrowedEquipment = await getMyBorrowedEquipment();
         populateTable("borrowed-equipment-table", borrowedEquipment);
+
+        // Re-attach event listeners after the tables are populated
+        addEventListeners();
     } catch (error) {
         console.error("Error loading equipment data:", error.message);
         alert("Failed to load equipment data. Please try again.");
@@ -56,7 +53,7 @@ function populateTable(tableId, data) {
 function addEventListeners() {
     // Add event listeners for borrow buttons
     document.querySelectorAll('.btn-borrow').forEach(button => {
-        button.addEventListener('click', async (event) => {
+        button.addEventListener('click', debounce(async (event) => {
             const equipmentId = event.target.id.split('-')[1]; // Extract equipment ID from button ID
             try {
                 await borrowEquipment(equipmentId);
@@ -66,12 +63,12 @@ function addEventListeners() {
                 console.error("Error borrowing equipment:", error.message);
                 alert("Failed to borrow equipment. Please try again.");
             }
-        });
+        }, 300)); // Debounce to prevent rapid clicks
     });
 
     // Add event listeners for return buttons
     document.querySelectorAll('.btn-return').forEach(button => {
-        button.addEventListener('click', async (event) => {
+        button.addEventListener('click', debounce(async (event) => {
             const equipmentId = event.target.id.split('-')[1]; // Extract equipment ID from button ID
             try {
                 await returnEquipment(equipmentId);
@@ -81,7 +78,7 @@ function addEventListeners() {
                 console.error("Error returning equipment:", error.message);
                 alert(error.message); // Display the backend error message
             }
-        });
+        }, 300)); // Debounce to prevent rapid clicks
     });
 }
 
@@ -94,4 +91,13 @@ function displayAccessToken() {
         tokenContainer.innerHTML = `<strong>Access Token:</strong> ${token}`;
         document.getElementById("container").insertBefore(tokenContainer, document.getElementById("container").firstChild);
     }
+}
+
+// Debounce function to limit the rate of function calls
+function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
 }

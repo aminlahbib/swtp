@@ -15,7 +15,7 @@ table th, table td {
 }
 
 table th {
-    background-color: #3498db;
+    background-color: #034168;
     color: white;
 }
 
@@ -31,12 +31,12 @@ table tr:hover {
 }
 
 .btn-borrow {
-    background-color: #27ae60;
+    background-color: #034168;
     color: white;
 }
 
 .btn-borrow:hover {
-    background-color: #219653;
+    background-color: #0b2b4e;
 }
 
 .btn-return {

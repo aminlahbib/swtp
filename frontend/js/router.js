@@ -7,10 +7,10 @@ window.onload = function() {
         case "":
             // Redirect the user to the login page if they are not authenticated.
             if(sessionStorage.getItem("authentication_token") === null) {
-                loadPage("login");
+                loadPage("/login");
             } else {
                 // Redirect to the equipment dashboard if the user is authenticated
-                loadPage("equipments-dashboard");
+                loadPage("/equipments-dashboard");
             }
             break;
         default:
@@ -36,7 +36,7 @@ export function loadPage(path) {
 
     // Retrieve the html template and load it into the container element.
     const request = new XMLHttpRequest();
-    request.open("GET", "/templates/" + path + ".html");
+    request.open("GET", "./templates/" + path + ".html");
     request.send();
     request.onload = function() {
         if(request.status == 200) {
@@ -80,5 +80,5 @@ function signOut() {
     sessionStorage.clear();
 
     // Redirect the user to the login page.
-    loadPage("login");
+    loadPage("./login");
 }
