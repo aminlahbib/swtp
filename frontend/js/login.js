@@ -1,92 +1,68 @@
-import { login } from "./api.js";
-import { navigateTo } from "./router.js";
+import { loginUser } from "./api.js";
+import { loadPage } from "./router.js";
+import { hideNavbar, removeInvalidState, setFieldInvalid } from "./utilities.js";
 
-// Validate login form inputs
-const validateLoginForm = (username, password) => {
-    if (username.length < 3) {
-        return "Username must be at least 3 characters.";
-    }
-    if (password.length < 6) {
-        return "Password must be at least 6 characters.";
-    }
-    return null; // No validation errors
-};
+document.getElementById('login-script').onload = function () {
+    hideNavbar();
 
-// Function to decode a JWT token
-const decodeJwt = (token) => {
-    try {
-        // Split the token into its parts (header, payload, signature)
-        const base64Url = token.split('.')[1]; // Get the payload part
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Convert to base64
-        const jsonPayload = decodeURIComponent(
-            atob(base64)
-                .split('')
-                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                .join('')
-        ); // Decode the payload
-        return JSON.parse(jsonPayload); // Parse the payload as JSON
-    } catch (error) {
-        console.error("Error decoding JWT token:", error);
-        return null;
-    }
-};
+    document.getElementById('submit').addEventListener("click", login);
+    document.getElementById("register-button").addEventListener("click", redirectToRegister);
+}
 
-// Handle login form submission
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+async function login() {
+    // Clear any existing error messages
+    document.getElementById("user-details-error").innerText = "";
 
-    // Get form inputs
-    const username = document.getElementById("loginUsername").value;
-    const password = document.getElementById("loginPassword").value;
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-    // Validate inputs
-    const validationError = validateLoginForm(username, password);
-    if (validationError) {
-        document.getElementById("loginMessage").textContent = validationError;
-        return; // Stop if validation fails
-    }
+    const valid = validateLoginForm(username, password);
 
-    // Clear any previous error messages
-    document.getElementById("loginMessage").textContent = "";
+    if (valid) {
+        try {
+            const response = await loginUser(username, password);
 
-    try {
-        // Call the login API
-        const data = await login(username, password);
-
-        // Handle the response
-        if (data.token) {
-            // Decode the JWT token
-            const decodedToken = decodeJwt(data.token);
-
-            if (decodedToken) {
-                // Store the token and username in sessionStorage
-                sessionStorage.setItem("token", data.token);
-                sessionStorage.setItem("username", decodedToken.sub); // Assuming 'sub' contains the username
-
-                // Redirect to the equipment dashboard
-                navigateTo("templates/Equipment-Dashboard");
+            if (response.ok) {
+                const data = await response.json(); // Parse the JSON response
+                const token = data.token; // Extract the token
+                sessionStorage.setItem("authentication_token", token); // Store the token
+                loadPage("equipments-dashboard"); // Redirect to the dashboard
             } else {
-                // Handle token decoding failure
-                document.getElementById("loginMessage").textContent = "An error occurred. Please try again.";
+                // Parse the error response
+                const errorData = await response.json();
+                const errorMessage = errorData.message || "Login failed. Please try again.";
+                document.getElementById("user-details-error").innerText = errorMessage;
+
+                // Mark the fields as invalid
+                setFieldInvalid("username");
+                setFieldInvalid("password");
             }
-        } else {
-            // Display error message from the backend
-            document.getElementById("loginMessage").textContent = data.message || "Login failed.";
-        }
-    } catch (error) {
-
-        // Handle network or API errors
-        console.error("Login error:", error);
-
-        // Display the backend error message to the user
-        if (error.message === "Ungültige Anmeldedaten") {
-            document.getElementById("loginMessage").textContent = "Invalid username. Please try again.";
-            document.getElementById("loginUsername").classList.add("invalid");
-        } else if (error.message === "Ungültige Password") {
-            document.getElementById("loginMessage").textContent = error.message || "Invalid password. Please try again.";
-            document.getElementById("loginPassword").classList.add("invalid");
-        } else{
-            document.getElementById("loginMessage").textContent = error.message || "An error occurred. Please try again.";
+        } catch (error) {
+            console.error("Error during login:", error);
+            document.getElementById("user-details-error").innerText = "An unexpected error occurred. Please try again.";
         }
     }
-});
+}
+
+function redirectToRegister() {
+    loadPage("register");
+}
+
+function validateLoginForm(username, password) {
+    removeInvalidState("username");
+    removeInvalidState("password");
+
+    if (username === "" || username === null || password === "" || password === null) {
+        if (username === "" || username === null) {
+            setFieldInvalid("username", "Username is required.");
+        }
+
+        if (password === "" || password === null) {
+            setFieldInvalid("password", "Password is required.");
+        }
+
+        return false;
+    }
+
+    return true;
+}

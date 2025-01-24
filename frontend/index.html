@@ -2,62 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equipment Management System</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/navbar.css">
+    <link rel="stylesheet" href="./css/login.css">
+    <link rel="stylesheet" href="./css/table.css">
+    <link rel="stylesheet" href="./css/toast.css">
+    <link rel="stylesheet" href="./css/modal.css">
+    <link rel="stylesheet" href="./css/input.css">
+    <link rel="stylesheet" href="./css/utilities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <title>Equipment Management</title>
 </head>
 <body>
-
-<div class="navbar">
-    <a href="templates/Admin-Dashboard.html" class="active">Dashboard</a>
-    <a href="index.html" id="logoutButton">Home Page</a>
-</div>
-
-<div class="container">
-    <h1>Equipment Management System</h1>
-
-    <!-- Login Form -->
-    <div id="login-form">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <label for="loginUsername">Username:</label>
-            <input type="text" id="loginUsername" name="username" required>
-
-            <label for="loginPassword">Password:</label>
-            <input type="password" id="loginPassword" name="password" required>
-
-            <button type="submit">Login</button>
-        </form>
-        <p id="loginMessage" class="error-message"></p>
+<div id="main">
+    <div id="navbar" class="navbar">
+        <div class="app-name-container">
+            <div class="app-logo"></div>
+            <h2 class="app-name">Equipment Management</h2>
+        </div>
+        <ul class="links">
+            <li id="sign-out-navlink" class="menu__item">Sign out</li>
+        </ul>
     </div>
 
-    <!-- Registration Form -->
-    <div id="register-form">
-        <h2>Register</h2>
-        <form id="registerForm">
-            <label for="registerUsername">Username:</label>
-            <input type="text" id="registerUsername" name="username" required>
-
-            <label for="registerFirstName">First Name:</label>
-            <input type="text" id="registerFirstName" name="firstName" required>
-
-            <label for="registerLastName">Last Name:</label>
-            <input type="text" id="registerLastName" name="lastName" required>
-
-            <label for="registerPassword">Password:</label>
-            <input type="password" id="registerPassword" name="password" required>
-
-            <button type="submit">Register</button>
-        </form>
-        <p id="registerMessage" class="error-message"></p>
-    </div>
+    <div id="container" class="container"></div>
 </div>
-
-<script src="js/api.js" type="module"></script>
-<script src="js/scripts.js" type="module"></script>
-<script src="js/router.js" type="module"></script>
-<script src="js/register.js" type="module"></script>
-<script src="js/login.js" type="module"></script>
+<script id="router" src="./js/router.js" type="module" async></script>
 </body>
 </html>

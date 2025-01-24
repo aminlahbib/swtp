@@ -1,87 +1,104 @@
-const API_BASE_URL = "http://localhost:8080/api";
+const baseUrl = "http://localhost:8080/api/benutzer";
 
-// Helper function to handle API requests and errors
-const fetchApi = async (url, options = {}) => {
-    try {
-        const response = await fetch(url, options);
+// Helper function to get the authorization token
+function getAuthorizationToken() {
+    return "Bearer " + sessionStorage.getItem("authentication_token");
+}
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "An error occurred.");
-        }
+// Login User
+export async function loginUser(username, password) {
+    const body = {
+        benutzername: username,
+        password: password
+    };
 
-        return response.json();
-    } catch (error) {
-        console.error("API error:", error);
-        throw new Error(error.message || "Network error. Please check your connection and try again.");
-    }
-};
-
-// Login
-export const login = async (username, password) => {
-    return fetchApi(`${API_BASE_URL}/benutzer/login`, {
+    return await fetch(baseUrl + "/login", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
         },
-        body: JSON.stringify({ benutzername: username, password: password }),
+        body: JSON.stringify(body)
     });
-};
+}
 
-// Register
-export const register = async (username, firstName, lastName, password) => {
-    return fetchApi(`${API_BASE_URL}/benutzer/register`, {
+// Register User
+export async function registerUser(username, password, firstName, lastName) {
+    const body = {
+        benutzername: username,
+        password: password,
+        vorname: firstName,
+        nachname: lastName
+    };
+
+    return await fetch(baseUrl + "/register", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-            benutzername: username,
-            vorname: firstName,
-            nachname: lastName,
-            password: password,
-        }),
+        body: JSON.stringify(body)
     });
-};
+}
 
 // Get Available Equipment
-export const getAvailableEquipment = async () => {
-    const token = localStorage.getItem("token");
-    return fetchApi(`${API_BASE_URL}/benutzer/equipment`, {
+export async function getAvailableEquipment() {
+    return await fetch(baseUrl + "/equipment", {
+        method: "GET",
         headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+            "Authorization": getAuthorizationToken(),
+            "Content-Type": "application/json"
+        }
+    }).then(async (response) => {
+        if (!response.ok) {
+            throw new Error("Failed to fetch available equipment");
+        }
+        return await response.json();
     });
-};
-
-// Borrow Equipment
-export const borrowEquipment = async (equipmentId) => {
-    const token = localStorage.getItem("token");
-    return fetchApi(`${API_BASE_URL}/benutzer/ausleihen/${equipmentId}`, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
-    });
-};
-
-// Return Equipment
-export const returnEquipment = async (equipmentId) => {
-    const token = localStorage.getItem("token");
-    return fetchApi(`${API_BASE_URL}/benutzer/rueckgabe/${equipmentId}`, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
-    });
-};
+}
 
 // Get Borrowed Equipment for Current User
-export const getBorrowedEquipment = async () => {
-    const token = localStorage.getItem("token");
-    return fetchApi(`${API_BASE_URL}/benutzer/ausleihen`, {
+export async function getMyBorrowedEquipment() {
+    return await fetch(baseUrl + "/ausleihen", {
+        method: "GET",
         headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+            "Authorization": getAuthorizationToken(),
+            "Content-Type": "application/json"
+        }
+    }).then(async (response) => {
+        if (!response.ok) {
+            throw new Error("Failed to fetch borrowed equipment");
+        }
+        return await response.json();
     });
-};
+}
+
+// Borrow Equipment
+export async function borrowEquipment(equipmentId) {
+    return await fetch(baseUrl + "/ausleihen/" + equipmentId, {
+        method: "POST",
+        headers: {
+            "Authorization": getAuthorizationToken(),
+            "Content-Type": "application/json"
+        }
+    }).then(async (response) => {
+        if (!response.ok) {
+            throw new Error("Failed to borrow equipment");
+        }
+        return response;
+    });
+}
+
+// Return Equipment
+export async function returnEquipment(equipmentId) {
+    return await fetch(baseUrl + "/rueckgabe/" + equipmentId, {
+        method: "POST",
+        headers: {
+            "Authorization": getAuthorizationToken(),
+            "Content-Type": "application/json"
+        }
+    }).then(async (response) => {
+        if (!response.ok) {
+            throw new Error("Failed to return equipment");
+        }
+        return response;
+    });
+}

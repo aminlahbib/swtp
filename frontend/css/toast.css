@@ -1,0 +1,37 @@
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+}
+
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.toast-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.toast-body {
+    font-size: 14px;
+}
+
+.hide {
+    display: none;
+}

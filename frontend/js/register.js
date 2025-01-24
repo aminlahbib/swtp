@@ -1,61 +1,74 @@
-import { register } from "./api.js";
-import { navigateTo } from "./router.js";
+import { hideNavbar, setFieldInvalid } from "./utilities.js";
+import { loadPage } from "./router.js";
+import { registerUser, loginUser } from "./api.js"; // Import loginUser
 
-// Validate registration form inputs
-const validateRegisterForm = (username, firstName, lastName, password) => {
-    if (username.length < 3) {
-        return "Username must be at least 3 characters.";
-    }
-    if (firstName.length < 2) {
-        return "First name must be at least 2 characters.";
-    }
-    if (lastName.length < 2) {
-        return "Last name must be at least 2 characters.";
-    }
-    if (password.length < 6) {
-        return "Password must be at least 6 characters.";
-    }
-    return null; // No validation errors
-};
+document.getElementById('register-script').onload = function () {
+    hideNavbar();
 
-// Handle registration form submission
-document.getElementById("registerForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    document.getElementById('register-user-button').addEventListener("click", register);
+    document.getElementById("sign-in-button").addEventListener("click", redirectToSignIn);
+}
 
-    // Get form inputs
-    const username = document.getElementById("registerUsername").value;
-    const firstName = document.getElementById("registerFirstName").value;
-    const lastName = document.getElementById("registerLastName").value;
-    const password = document.getElementById("registerPassword").value;
+async function register() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const firstName = document.getElementById("first-name").value;
+    const lastName = document.getElementById("last-name").value;
 
-    // Validate inputs
-    const validationError = validateRegisterForm(username, firstName, lastName, password);
-    if (validationError) {
-        document.getElementById("registerMessage").textContent = validationError;
-        return; // Stop if validation fails
-    }
+    const valid = validateRegisterForm(username, password, firstName, lastName);
 
-    // Clear any previous error messages
-    document.getElementById("registerMessage").textContent = "";
+    if (valid) {
+        const response = await registerUser(username, password, firstName, lastName);
 
-    try {
-        // Call the register API
-        const data = await register(username, firstName, lastName, password);
+        if (response.ok) {
+            // Automatically log the user in after successful registration
+            const loginResponse = await loginUser(username, password);
 
-        // Handle the response
-        if (data.token) {
-            // Store the token in localStorage
-            localStorage.setItem("token", data.token);
+            if (loginResponse.ok) {
+                const token = await loginResponse.text();
+                sessionStorage.setItem("authentication_token", token);
 
-            // Redirect to the user dashboard
-            navigateTo("/benutzer-dashboard");
+                // Redirect to the equipment dashboard
+                loadPage("equipments-dashboard");
+            } else {
+                // Handle login error
+                document.getElementById("register-error").innerText = "Automatic login failed. Please log in manually.";
+            }
         } else {
-            // Display error message from the backend
-            document.getElementById("registerMessage").textContent = data.message || "Registration failed.";
+            setFieldInvalid("username");
+            setFieldInvalid("password");
+            setFieldInvalid("first-name");
+            setFieldInvalid("last-name");
+
+            document.getElementById("register-error").innerText = await response.text();
         }
-    } catch (error) {
-        // Handle network or API errors
-        console.error("Registration error:", error);
-        document.getElementById("registerMessage").textContent = error.message || "An error occurred. Please try again.";
     }
-});
+}
+
+function redirectToSignIn() {
+    loadPage("login");
+}
+
+function validateRegisterForm(username, password, firstName, lastName) {
+    if (username === "" || username === null || password === "" || password === null || firstName === "" || firstName === null || lastName === "" || lastName === null) {
+        if (username === "" || username === null) {
+            setFieldInvalid('username', "Username is required.");
+        }
+
+        if (password === "" || password === null) {
+            setFieldInvalid('password', "Password is required.");
+        }
+
+        if (firstName === "" || firstName === null) {
+            setFieldInvalid('first-name', "First Name is required.");
+        }
+
+        if (lastName === "" || lastName === null) {
+            setFieldInvalid('last-name', "Last Name is required.");
+        }
+
+        return false;
+    }
+
+    return true;
+}
