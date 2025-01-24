@@ -151,16 +151,6 @@ async function handleReturnClick(equipmentId) {
         alert(error.message); // Display the backend error message
     }
 }
-// function displayAccessToken() {
-//     const token = sessionStorage.getItem("authentication_token");
-//     if (token) {
-//         const tokenContainer = document.createElement("div");
-//         tokenContainer.id = "token-container";
-//         tokenContainer.className = "token-container";
-//         tokenContainer.innerHTML = `<strong>Access Token:</strong> ${token}`;
-//         document.getElementById("container").insertBefore(tokenContainer, document.getElementById("container").firstChild);
-//     }
-// }
 
 // Debounce function to limit the rate of function calls
 function debounce(func, wait) {
