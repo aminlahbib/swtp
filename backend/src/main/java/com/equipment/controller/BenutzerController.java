@@ -6,8 +6,11 @@ import com.equipment.dto.RegisterRequest;
 import com.equipment.service.BenutzerService;
 import com.equipment.service.AusleiheService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/benutzer")
@@ -20,8 +23,14 @@ public class BenutzerController {
 
     //error handling
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(benutzerService.register(request));
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        try {
+            AuthResponse response = benutzerService.register(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            // Handle the exception and return a 409 Conflict response
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
+        }
     }
 
     //error handling
