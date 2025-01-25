@@ -41,6 +41,6 @@ services:
       - loan-network
 
 networks:
-  investment-network:
+  loan-network:
     name: "loan-network"
     driver: bridge
