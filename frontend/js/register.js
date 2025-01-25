@@ -32,7 +32,9 @@ async function register() {
                 const loginResponse = await loginUser(username, password);
 
                 if (loginResponse.ok) {
-                    const token = await loginResponse.text();
+                    // Handle the login response (token is returned as a JSON object)
+                    const loginData = await loginResponse.json(); // Parse the response as JSON
+                    const token = loginData.token; // Extract the token from the JSON object
                     sessionStorage.setItem("authentication_token", token);
 
                     // Redirect to the equipment dashboard
