@@ -6,12 +6,25 @@ export function hideNavbar() {
     document.getElementById("navbar").classList.add("hide");
 }
 
-export function setFieldInvalid(id, error) {
-    document.getElementById(id).classList.add('invalid-input');
-    document.getElementById(id + '-error').innerText = error === undefined || error === null ? "" : error;
+
+export function setFieldInvalid(fieldId, errorMessage = "") {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.classList.add("invalid-input");
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        if (errorElement) {
+            errorElement.innerText = errorMessage;
+        }
+    }
 }
 
-export function removeInvalidState(id) {
-    document.getElementById(id).classList.remove('invalid-input');
-    document.getElementById(id + '-error').innerText = "";
+export function removeInvalidState(fieldId) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.classList.remove("invalid-input");
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        if (errorElement) {
+            errorElement.innerText = "";
+        }
+    }
 }

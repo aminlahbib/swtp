@@ -7,6 +7,10 @@ document.getElementById('login-script').onload = function () {
 
     document.getElementById('submit').addEventListener("click", login);
     document.getElementById("register-button").addEventListener("click", redirectToRegister);
+
+    // Add event listeners to remove invalid state when the user corrects the input
+    document.getElementById("username").addEventListener("input", () => removeInvalidState("username"));
+    document.getElementById("password").addEventListener("input", () => removeInvalidState("password"));
 }
 
 async function login() {
@@ -23,19 +27,22 @@ async function login() {
             const response = await loginUser(username, password);
 
             if (response.ok) {
-                const data = await response.json(); // Parse the JSON response
-                const token = data.token; // Extract the token
-                sessionStorage.setItem("authentication_token", token); // Store the token
-                loadPage("equipments-dashboard"); // Redirect to the dashboard
+                const data = await response.json();
+                const token = data.token;
+                sessionStorage.setItem("authentication_token", token);
+                loadPage("equipments-dashboard");
             } else {
                 // Parse the error response
                 const errorData = await response.json();
                 const errorMessage = errorData.message || "Login failed. Please try again.";
                 document.getElementById("user-details-error").innerText = errorMessage;
 
-                // Mark the fields as invalid
-                setFieldInvalid("username");
-                setFieldInvalid("password");
+                // Mark the specific fields as invalid based on the error
+                if (errorMessage.toLowerCase().includes("username")) {
+                    setFieldInvalid("username", errorMessage);
+                } else if (errorMessage.toLowerCase().includes("password")) {
+                    setFieldInvalid("password", errorMessage);
+                }
             }
         } catch (error) {
             console.error("Error during login:", error);
@@ -49,20 +56,22 @@ function redirectToRegister() {
 }
 
 function validateLoginForm(username, password) {
+    let isValid = true;
+
+    // Clear all error messages and invalid states
+    document.getElementById("user-details-error").innerText = "";
     removeInvalidState("username");
     removeInvalidState("password");
 
-    if (username === "" || username === null || password === "" || password === null) {
-        if (username === "" || username === null) {
-            setFieldInvalid("username", "Username is required.");
-        }
-
-        if (password === "" || password === null) {
-            setFieldInvalid("password", "Password is required.");
-        }
-
-        return false;
+    if (username === "" || username === null) {
+        setFieldInvalid("username", "Username is required.");
+        isValid = false;
     }
 
-    return true;
+    if (password === "" || password === null) {
+        setFieldInvalid("password", "Password is required.");
+        isValid = false;
+    }
+
+    return isValid;
 }

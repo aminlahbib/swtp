@@ -48,6 +48,12 @@ export async function getAvailableEquipment() {
             "Content-Type": "application/json"
         }
     }).then(async (response) => {
+        if (response.status === 401) {
+            // Token is expired or invalid
+            sessionStorage.removeItem("authentication_token");
+            loadPage("login"); // Redirect to login page
+            throw new Error("Session expired. Please log in again.");
+        }
         if (!response.ok) {
             throw new Error("Failed to fetch available equipment");
         }
@@ -55,7 +61,6 @@ export async function getAvailableEquipment() {
     });
 }
 
-// Get Borrowed Equipment for Current User
 export async function getMyBorrowedEquipment() {
     return await fetch(baseUrl + "/ausleihen", {
         method: "GET",
@@ -64,6 +69,12 @@ export async function getMyBorrowedEquipment() {
             "Content-Type": "application/json"
         }
     }).then(async (response) => {
+        if (response.status === 401) {
+            // Token is expired or invalid
+            sessionStorage.removeItem("authentication_token");
+            loadPage("login"); // Redirect to login page
+            throw new Error("Session expired. Please log in again.");
+        }
         if (!response.ok) {
             throw new Error("Failed to fetch borrowed equipment");
         }

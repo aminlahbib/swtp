@@ -1,12 +1,18 @@
-import { hideNavbar, setFieldInvalid } from "./utilities.js";
+import { hideNavbar, setFieldInvalid, removeInvalidState } from "./utilities.js";
 import { loadPage } from "./router.js";
-import { registerUser, loginUser } from "./api.js"; // Import loginUser
+import { registerUser, loginUser } from "./api.js";
 
 document.getElementById('register-script').onload = function () {
     hideNavbar();
 
     document.getElementById('register-user-button').addEventListener("click", register);
     document.getElementById("sign-in-button").addEventListener("click", redirectToSignIn);
+
+    // Add event listeners to remove invalid state when the user corrects the input
+    document.getElementById("username").addEventListener("input", () => removeInvalidState("username"));
+    document.getElementById("password").addEventListener("input", () => removeInvalidState("password"));
+    document.getElementById("first-name").addEventListener("input", () => removeInvalidState("first-name"));
+    document.getElementById("last-name").addEventListener("input", () => removeInvalidState("last-name"));
 }
 
 async function register() {
@@ -18,29 +24,58 @@ async function register() {
     const valid = validateRegisterForm(username, password, firstName, lastName);
 
     if (valid) {
-        const response = await registerUser(username, password, firstName, lastName);
+        try {
+            const response = await registerUser(username, password, firstName, lastName);
 
-        if (response.ok) {
-            // Automatically log the user in after successful registration
-            const loginResponse = await loginUser(username, password);
+            if (response.ok) {
+                // Automatically log the user in after successful registration
+                const loginResponse = await loginUser(username, password);
 
-            if (loginResponse.ok) {
-                const token = await loginResponse.text();
-                sessionStorage.setItem("authentication_token", token);
+                if (loginResponse.ok) {
+                    // Handle the login response (token is returned as a JSON object)
+                    const loginData = await loginResponse.json(); // Parse the response as JSON
+                    const token = loginData.token; // Extract the token from the JSON object
+                    sessionStorage.setItem("authentication_token", token);
 
-                // Redirect to the equipment dashboard
-                loadPage("equipments-dashboard");
+                    // Redirect to the equipment dashboard
+                    loadPage("equipments-dashboard");
+                } else {
+                    // Handle login error
+                    document.getElementById("register-error").innerText = "Automatic login failed. Please log in manually.";
+                }
             } else {
-                // Handle login error
-                document.getElementById("register-error").innerText = "Automatic login failed. Please log in manually.";
-            }
-        } else {
-            setFieldInvalid("username");
-            setFieldInvalid("password");
-            setFieldInvalid("first-name");
-            setFieldInvalid("last-name");
+                // Parse the error response from the backend
+                let errorMessage = "Register request failed. Please try again!";
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorMessage;
 
-            document.getElementById("register-error").innerText = await response.text();
+                    // Handle specific error cases
+                    if (response.status === 409) {
+                        // Username already exists
+                        setFieldInvalid("username", errorMessage);
+                    } else {
+                        // Mark specific fields as invalid based on the error
+                        if (errorMessage.toLowerCase().includes("benutzername")) {
+                            setFieldInvalid("username", errorMessage);
+                        } else if (errorMessage.toLowerCase().includes("password")) {
+                            setFieldInvalid("password", errorMessage);
+                        } else if (errorMessage.toLowerCase().includes("first name")) {
+                            setFieldInvalid("first-name", errorMessage);
+                        } else if (errorMessage.toLowerCase().includes("last name")) {
+                            setFieldInvalid("last-name", errorMessage);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to parse error response:", error);
+                }
+
+                // Display the generic error message above the register button
+                document.getElementById("register-error").innerText = "Register request failed. Please try again!";
+            }
+        } catch (error) {
+            console.error("Error during registration:", error);
+            document.getElementById("register-error").innerText = "An unexpected error occurred. Please try again.";
         }
     }
 }
@@ -50,25 +85,34 @@ function redirectToSignIn() {
 }
 
 function validateRegisterForm(username, password, firstName, lastName) {
-    if (username === "" || username === null || password === "" || password === null || firstName === "" || firstName === null || lastName === "" || lastName === null) {
-        if (username === "" || username === null) {
-            setFieldInvalid('username', "Username is required.");
-        }
+    let isValid = true;
 
-        if (password === "" || password === null) {
-            setFieldInvalid('password', "Password is required.");
-        }
+    // Clear all error messages and invalid states
+    document.getElementById("register-error").innerText = "";
+    removeInvalidState("username");
+    removeInvalidState("password");
+    removeInvalidState("first-name");
+    removeInvalidState("last-name");
 
-        if (firstName === "" || firstName === null) {
-            setFieldInvalid('first-name', "First Name is required.");
-        }
-
-        if (lastName === "" || lastName === null) {
-            setFieldInvalid('last-name', "Last Name is required.");
-        }
-
-        return false;
+    if (username === "" || username === null) {
+        setFieldInvalid("username", "Username is required.");
+        isValid = false;
     }
 
-    return true;
+    if (password === "" || password === null) {
+        setFieldInvalid("password", "Password is required.");
+        isValid = false;
+    }
+
+    if (firstName === "" || firstName === null) {
+        setFieldInvalid("first-name", "First Name is required.");
+        isValid = false;
+    }
+
+    if (lastName === "" || lastName === null) {
+        setFieldInvalid("last-name", "Last Name is required.");
+        isValid = false;
+    }
+
+    return isValid;
 }
