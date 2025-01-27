@@ -3,7 +3,6 @@ package com.equipment.exception;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-@Getter
 public class EquipmentException extends RuntimeException {
     private final HttpStatus status;
 
@@ -23,4 +22,8 @@ public class EquipmentException extends RuntimeException {
     public static EquipmentException badRequest(String message) {
         return new EquipmentException(message, HttpStatus.BAD_REQUEST);
     }
-} 
+
+    public HttpStatus getStatus() {
+        return status;
+    }
+}
