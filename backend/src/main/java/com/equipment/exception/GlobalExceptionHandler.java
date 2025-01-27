@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalExceptionHandler.ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
         log.error("Authentication failed: {}", ex.getMessage());
         return new ResponseEntity<>(
-                new GlobalExceptionHandler.ErrorResponse("Ungültige Anmeldedaten"), // "Invalid credentials"
+                new GlobalExceptionHandler.ErrorResponse("Invalid credentials"), // "Invalid credentials"
                 HttpStatus.UNAUTHORIZED // 401 Unauthorized
         );
     }

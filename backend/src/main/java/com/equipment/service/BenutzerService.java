@@ -35,7 +35,7 @@ public class BenutzerService {
 
     public AuthResponse register(RegisterRequest request) {
         if (benutzerRepository.existsByBenutzername(request.getBenutzername())) {
-            throw new RuntimeException("Benutzername bereits vergeben");
+            throw new RuntimeException("Username already taken");
         }
 
         // Generate a salt
@@ -64,7 +64,7 @@ public class BenutzerService {
         Benutzer benutzer = benutzerRepository.findByBenutzername(request.getBenutzername())
                 .orElseThrow(() -> {
                     log.debug("User not found: {}", request.getBenutzername());
-                    return new BadCredentialsException("Ungültige Anmeldedaten");
+                    return new BadCredentialsException("Invalid credentials");
                 });
 
         log.debug("User found: {}", benutzer.getBenutzername());
@@ -73,7 +73,7 @@ public class BenutzerService {
         if (!comparePasswords(request.getPassword(), benutzer.getPasswordSalt(), benutzer.getPasswordHash())) {
             log.debug("Incorrect password for user: {}", request.getBenutzername());
             log.debug("Stored password hash: {}", new String(benutzer.getPasswordHash()));
-            throw new BadCredentialsException("Ungültige Password");
+            throw new BadCredentialsException("Invalid Password");
         }
 
         log.debug("Login successful for user: {}", request.getBenutzername());

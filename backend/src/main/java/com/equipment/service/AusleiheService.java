@@ -42,19 +42,19 @@ public class AusleiheService {
                 return equipmentRepository.findByIdNotIn(ausgeliehenIds);
             }
         } catch (Exception e) {
-            throw EquipmentException.badRequest("Fehler beim Laden der verfügbaren Geräte: " + e.getMessage());
+            throw EquipmentException.badRequest("Error loading available devices: " + e.getMessage());
         }
     }
 
     @Transactional
     public void borrowEquipment(Integer equipmentId) {
         Equipment equipment = equipmentRepository.findById(equipmentId)
-                .orElseThrow(() -> EquipmentException.notFound("Equipment nicht gefunden"));
+                .orElseThrow(() -> EquipmentException.notFound("Equipment not found"));
 
         // Check if equipment is already borrowed
         if (ausleiheRepository.findAll().stream()
                 .anyMatch(a -> a.getEquipment().getId().equals(equipmentId))) {
-            throw EquipmentException.badRequest("Equipment ist bereits ausgeliehen");
+            throw EquipmentException.badRequest("Equipment is already rented");
         }
 
         Benutzer currentUser = (Benutzer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -67,7 +67,7 @@ public class AusleiheService {
         try {
             ausleiheRepository.save(ausleihe);
         } catch (Exception e) {
-            throw EquipmentException.badRequest("Fehler beim Ausleihen des Equipments: " + e.getMessage());
+            throw EquipmentException.badRequest("Error when renting equipment:" + e.getMessage());
         }
     }
 
@@ -79,7 +79,7 @@ public class AusleiheService {
                 .filter(a -> a.getEquipment().getId().equals(equipmentId))
                 .filter(a -> a.getBenutzer().getId().equals(currentUser.getId()))
                 .findFirst()
-                .orElseThrow(() -> EquipmentException.notFound("Keine aktive Ausleihe für dieses Equipment gefunden"));
+                .orElseThrow(() -> EquipmentException.notFound("No active rental found for this equipment"));
 
         LogItem logItem = new LogItem();
         logItem.setBenutzername(ausleihe.getBenutzer().getBenutzername());
@@ -92,7 +92,7 @@ public class AusleiheService {
             logItemRepository.save(logItem);
             ausleiheRepository.delete(ausleihe);
         } catch (Exception e) {
-            throw EquipmentException.badRequest("Fehler bei der Rückgabe des Equipments: " + e.getMessage());
+            throw EquipmentException.badRequest("Errors returning the equipment: " + e.getMessage());
         }
     }
 
@@ -101,7 +101,7 @@ public class AusleiheService {
             Benutzer currentUser = (Benutzer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             return ausleiheRepository.findByBenutzerId(currentUser.getId());
         } catch (Exception e) {
-            throw EquipmentException.badRequest("Fehler beim Laden der ausgeliehenen Geräte: " + e.getMessage());
+            throw EquipmentException.badRequest("Error loading the borrowed devices:" + e.getMessage());
         }
     }
 } 

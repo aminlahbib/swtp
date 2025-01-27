@@ -30,29 +30,29 @@ public class AdminService {
         
         if (equipmentRepository.existsByInventarnummer(equipment.getInventarnummer())) {
             throw EquipmentException.alreadyExists(
-                "Equipment mit Inventarnummer " + equipment.getInventarnummer() + " existiert bereits"
+                "Equipment with inventory number " + equipment.getInventarnummer() + " already exists"
             );
         }
         
         try {
             return equipmentRepository.save(equipment);
         } catch (Exception e) {
-            throw EquipmentException.badRequest("Fehler beim Speichern des Equipments: " + e.getMessage());
+            throw EquipmentException.badRequest("Error saving equipment: " + e.getMessage());
         }
     }
 
     private void validateNewEquipment(Equipment equipment) {
         if (equipment.getInventarnummer() == null || equipment.getInventarnummer().trim().isEmpty()) {
-            throw EquipmentException.badRequest("Inventarnummer darf nicht leer sein");
+            throw EquipmentException.badRequest("Inventory number must not be empty");
         }
         if (equipment.getBezeichnung() == null || equipment.getBezeichnung().trim().isEmpty()) {
-            throw EquipmentException.badRequest("Bezeichnung darf nicht leer sein");
+            throw EquipmentException.badRequest("Description must not be empty");
         }
         if (equipment.getInventarnummer().length() > 20) {
-            throw EquipmentException.badRequest("Inventarnummer darf nicht länger als 20 Zeichen sein");
+            throw EquipmentException.badRequest("Inventory number must not be longer than 20 characters");
         }
         if (equipment.getBezeichnung().length() > 20) {
-            throw EquipmentException.badRequest("Bezeichnung darf nicht länger als 20 Zeichen sein");
+            throw EquipmentException.badRequest("Name must not be longer than 20 characters");
         }
     }
 
@@ -60,7 +60,7 @@ public class AdminService {
         try {
             return ausleiheRepository.findAll();
         } catch (Exception e) {
-            throw EquipmentException.badRequest("Fehler beim Laden der aktuellen Ausleihen: " + e.getMessage());
+            throw EquipmentException.badRequest("Error loading current loans: " + e.getMessage());
         }
     }
 
@@ -68,7 +68,7 @@ public class AdminService {
         try {
             return logItemRepository.findAll();
         } catch (Exception e) {
-            throw EquipmentException.badRequest("Fehler beim Laden der Ausleihhistorie: " + e.getMessage());
+            throw EquipmentException.badRequest("Error loading loan history: " + e.getMessage());
         }
     }
 } 
