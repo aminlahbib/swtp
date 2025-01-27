@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
 @Table(name = "equipment")
 public class Equipment {
     @Id
@@ -22,6 +21,9 @@ public class Equipment {
         this.id = id;
         this.inventarnummer = inventarnummer;
         this.bezeichnung = bezeichnung;
+    }
+
+    public Equipment() {
     }
 
     public Integer getId() {
