@@ -9,3 +9,7 @@ docker compose stop
 
 ## Build and start the services:
 docker-compose up --build -d
+
+docker-compose -p equipment_app up -d
+
+http://localhost/templates/Admin-Dashboard.html
