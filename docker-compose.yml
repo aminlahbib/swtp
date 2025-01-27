@@ -31,16 +31,13 @@ services:
       - loan-network
 
   frontend:
-    build: ./frontend
-    container_name: loan_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "8081:80"
+      - "80:80"
     depends_on:
-      backend:
-        condition: service_started
-    volumes:
-      - ./ui:/usr/share/nginx/html
-      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+      - backend
     networks:
       - loan-network
 
