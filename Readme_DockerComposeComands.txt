@@ -6,3 +6,6 @@ docker compose up -d
 
 docker compose start
 docker compose stop
+
+## Build and start the services:
+docker-compose up --build -d

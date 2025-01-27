@@ -48,4 +48,10 @@ docker ps
 docker ps -a
 
 
+mysql -u root -p
 
+mysql -u swtp -p
+
+show tables;
+
+exit; //to exist
