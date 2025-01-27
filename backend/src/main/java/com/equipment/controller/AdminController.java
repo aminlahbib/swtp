@@ -9,13 +9,17 @@ import com.equipment.service.AusleiheService;
 
 @RestController
 @RequestMapping("/api/admin")
-@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:8080")
 public class AdminController {
 
     private final AdminService adminService;
 
     private final AusleiheService ausleiheService;
+
+    public AdminController(AdminService adminService, AusleiheService ausleiheService) {
+        this.adminService = adminService;
+        this.ausleiheService = ausleiheService;
+    }
 
     @PostMapping("/equipment")
     public ResponseEntity<?> addEquipment(@RequestBody Equipment equipment) {

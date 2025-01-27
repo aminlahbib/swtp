@@ -2,9 +2,10 @@ package com.equipment.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
 @Entity
+@NoArgsConstructor
 @Table(name = "equipment")
 public class Equipment {
     @Id
@@ -16,4 +17,34 @@ public class Equipment {
 
     @Column(name ="bezeichnung", nullable = false, length = 20)
     private String bezeichnung;
-} 
+
+    public Equipment(Integer id, String inventarnummer, String bezeichnung) {
+        this.id = id;
+        this.inventarnummer = inventarnummer;
+        this.bezeichnung = bezeichnung;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getInventarnummer() {
+        return inventarnummer;
+    }
+
+    public void setInventarnummer(String inventarnummer) {
+        this.inventarnummer = inventarnummer;
+    }
+
+    public String getBezeichnung() {
+        return bezeichnung;
+    }
+
+    public void setBezeichnung(String bezeichnung) {
+        this.bezeichnung = bezeichnung;
+    }
+}

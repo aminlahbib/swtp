@@ -7,20 +7,31 @@ import com.equipment.model.Benutzer;
 import com.equipment.repository.BenutzerRepository;
 import com.equipment.security.JwtService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+//import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 
-@Slf4j
+//@Slf4j
 @Service
-@RequiredArgsConstructor
+
 public class BenutzerService {
     private final BenutzerRepository benutzerRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+
+
+    private static final Logger log = LoggerFactory.getLogger(BenutzerService.class);
+
+    public BenutzerService(BenutzerRepository benutzerRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+        this.benutzerRepository = benutzerRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
 
     public AuthResponse register(RegisterRequest request) {
         if (benutzerRepository.existsByBenutzername(request.getBenutzername())) {
@@ -43,6 +54,7 @@ public class BenutzerService {
         benutzerRepository.save(benutzer);
 
         String token = jwtService.generateToken(benutzer);
+
         return new AuthResponse(token);
     }
 

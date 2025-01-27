@@ -13,11 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class AdminService {
     private final EquipmentRepository equipmentRepository;
     private final AusleiheRepository ausleiheRepository;
     private final LogItemRepository logItemRepository;
+
+    public AdminService(EquipmentRepository equipmentRepository, AusleiheRepository ausleiheRepository, LogItemRepository logItemRepository) {
+        this.equipmentRepository = equipmentRepository;
+        this.ausleiheRepository = ausleiheRepository;
+        this.logItemRepository = logItemRepository;
+    }
 
     @Transactional
     public Equipment addEquipment(Equipment equipment) {

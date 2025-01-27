@@ -18,11 +18,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+
 public class AusleiheService {
     private final AusleiheRepository ausleiheRepository;
     private final EquipmentRepository equipmentRepository;
     private final LogItemRepository logItemRepository;
+
+    public AusleiheService(AusleiheRepository ausleiheRepository, EquipmentRepository equipmentRepository, LogItemRepository logItemRepository) {
+        this.ausleiheRepository = ausleiheRepository;
+        this.equipmentRepository = equipmentRepository;
+        this.logItemRepository = logItemRepository;
+    }
 
     public List<Equipment> getAvailableEquipment() {
         try {

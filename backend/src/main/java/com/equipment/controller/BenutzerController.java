@@ -14,12 +14,16 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/benutzer")
-@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:8080")
 public class BenutzerController {
 
     private final BenutzerService benutzerService;
     private final AusleiheService ausleiheService;
+
+    public BenutzerController(BenutzerService benutzerService, AusleiheService ausleiheService) {
+        this.benutzerService = benutzerService;
+        this.ausleiheService = ausleiheService;
+    }
 
     //error handling
     @PostMapping("/register")
