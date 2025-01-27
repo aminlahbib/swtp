@@ -34,7 +34,7 @@ services:
     image: "nginx:1.25.3-alpine-slim"
     container_name: loan_frontend
     ports:
-      - "8081:80"
+      - "63342:80"
     volumes:
       - ./ui:/usr/share/nginx/html
     networks:
