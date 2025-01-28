@@ -3,7 +3,7 @@
 ## Image erhält den Namen notiz_db_image 
 ## Muss nur einmal ausgeführt werden
 
-docker build -f Dockerfile -t notiz_app_image .
+docker build -f Dockerfile -t loan_app_image .
 
 
 ## Erzeugen eines Docker Container
@@ -14,7 +14,7 @@ docker build -f Dockerfile -t notiz_app_image .
 ## Muss nur einmal ausgeführt werden
 
 
-docker run --name swtpAppContainer -d -p8080:8080 -e  notiz_app_image
+docker run --name swtpAppContainer -d -p8080:8080 -e  loan_app_image
 
 
 ## Nachdem der Container erzeugt wurde
