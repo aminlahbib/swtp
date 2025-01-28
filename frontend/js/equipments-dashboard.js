@@ -1,4 +1,4 @@
-import { showNavbar } from './utilities.js';
+import { showNavbar, decodeToken } from './utilities.js';
 import { getAvailableEquipment, getMyBorrowedEquipment, borrowEquipment, returnEquipment } from './api.js';
 
 document.getElementById('equipments-dashboard-script').onload = async function () {
@@ -8,21 +8,6 @@ document.getElementById('equipments-dashboard-script').onload = async function (
     addEventListeners();
 };
 
-// Function to decode the JWT token manually
-function decodeToken(token) {
-    try {
-        // Split the token into its three parts
-        const [header, payload, signature] = token.split('.');
-
-        // Decode the payload (base64 URL decode)
-        const decodedPayload = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-
-        return decodedPayload;
-    } catch (error) {
-        console.error("Failed to decode token:", error);
-        return null;
-    }
-}
 
 // Function to display user info (username and token)
 function displayUserInfo() {

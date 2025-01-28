@@ -28,3 +28,14 @@ export function removeInvalidState(fieldId) {
         }
     }
 }
+
+export function decodeToken(token) {
+    try {
+        const [header, payload, signature] = token.split('.');
+        const decodedPayload = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+        return decodedPayload;
+    } catch (error) {
+        console.error("Failed to decode token:", error);
+        return null;
+    }
+}

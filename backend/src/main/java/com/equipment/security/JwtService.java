@@ -42,36 +42,30 @@ public class JwtService {
             return extractClaim(token, Claims::getSubject);
         }
 
-        private <T> T extractClaim(String token, java.util.function.Function<Claims, T> claimsResolver) {
-            final Claims claims = extractAllClaims(token);
-            return claimsResolver.apply(claims);
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("JWT token has expired", e);
+        } catch (JwtException e) {
+            throw new JwtException("Invalid JWT token", e);
         }
+    }
 
-        private Claims extractAllClaims(String token) {
-            try {
-                return Jwts.parserBuilder()
-                        .setSigningKey(getSigningKey())
-                        .build()
-                        .parseClaimsJws(token)
-                        .getBody();
-            } catch (ExpiredJwtException e) {
-                throw new JwtException("JWT has expired", e);
-            } catch (JwtException e) {
-                throw new JwtException("Invalid JWT token", e);
-            }
-        }
+    private <T> T extractClaim(String token, java.util.function.Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
 
-        // Validate token method
-        public boolean isTokenValid(String token, Benutzer benutzer) {
-            final String username = extractUsername(token);
-            return (username.equals(benutzer.getBenutzername()) && !isTokenExpired(token));
-        }
-
-        private boolean isTokenExpired(String token) {
-            return extractExpiration(token).before(new Date());
-        }
-
-        private Date extractExpiration(String token) {
-            return extractClaim(token, Claims::getExpiration);
-        }
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
     }

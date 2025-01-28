@@ -40,6 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
+
+        if (!jwtService.validateToken(jwt)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
         benutzername = jwtService.extractUsername(jwt);
 
         if (benutzername != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -47,9 +53,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (benutzer != null) {
                 var authToken = new UsernamePasswordAuthenticationToken(
-                    benutzer,
-                    null,
-                    java.util.Collections.emptyList()
+                        benutzer,
+                        null,
+                        java.util.Collections.emptyList()
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
