@@ -11,3 +11,5 @@ docker compose stop
 
 ## Admin dashboard
 http://localhost:8081/templates/Admin-Dashboard.html
+
+docker-compose down
