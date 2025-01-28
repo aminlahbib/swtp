@@ -117,7 +117,7 @@ function handleTableClick(event) {
 async function handleBorrowClick(equipmentId) {
     try {
         await borrowEquipment(equipmentId);
-        alert("Equipment borrowed successfully!");
+        // alert("Equipment borrowed successfully!");
         await loadEquipmentData(); // Refresh the equipment lists
     } catch (error) {
         console.error("Error borrowing equipment:", error.message);
@@ -129,7 +129,7 @@ async function handleBorrowClick(equipmentId) {
 async function handleReturnClick(equipmentId) {
     try {
         await returnEquipment(equipmentId);
-        alert("Equipment returned successfully!");
+        // alert("Equipment returned successfully!");
         await loadEquipmentData(); // Refresh the equipment lists
     } catch (error) {
         console.error("Error returning equipment:", error.message);
