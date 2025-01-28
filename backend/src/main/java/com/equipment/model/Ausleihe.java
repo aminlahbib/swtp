@@ -1,8 +1,7 @@
 package com.equipment.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 import java.time.LocalDateTime;
 
@@ -25,12 +24,12 @@ public class Ausleihe {
     @Column(nullable = false)
     private LocalDateTime ausleihe;
 
-    public Ausleihe(Integer id, Benutzer benutzer, Equipment equipment, LocalDateTime ausleihe) {
-        this.id = id;
-        this.benutzer = benutzer;
-        this.equipment = equipment;
-        this.ausleihe = ausleihe;
-    }
+//    public Ausleihe(Integer id, Benutzer benutzer, Equipment equipment, LocalDateTime ausleihe) {
+//        this.id = id;
+//        this.benutzer = benutzer;
+//        this.equipment = equipment;
+//        this.ausleihe = ausleihe;
+//    }
 
     public Ausleihe() {
     }

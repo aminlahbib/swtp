@@ -1,8 +1,6 @@
 package com.equipment.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "equipment")
@@ -30,23 +28,23 @@ public class Equipment {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+//    public void setId(Integer id) {
+//        this.id = id;
+//    }
 
     public String getInventarnummer() {
         return inventarnummer;
     }
 
-    public void setInventarnummer(String inventarnummer) {
-        this.inventarnummer = inventarnummer;
-    }
+//    public void setInventarnummer(String inventarnummer) {
+//        this.inventarnummer = inventarnummer;
+//    }
 
     public String getBezeichnung() {
         return bezeichnung;
     }
 
-    public void setBezeichnung(String bezeichnung) {
-        this.bezeichnung = bezeichnung;
-    }
+//    public void setBezeichnung(String bezeichnung) {
+//        this.bezeichnung = bezeichnung;
+//    }
 }

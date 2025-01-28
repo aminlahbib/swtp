@@ -8,7 +8,6 @@ import com.equipment.model.LogItem;
 import com.equipment.repository.AusleiheRepository;
 import com.equipment.repository.EquipmentRepository;
 import com.equipment.repository.LogItemRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

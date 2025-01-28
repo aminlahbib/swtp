@@ -1,7 +1,6 @@
 package com.equipment.security;
 
 import com.equipment.repository.BenutzerRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

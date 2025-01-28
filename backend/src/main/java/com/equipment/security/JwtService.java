@@ -5,7 +5,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,7 +19,7 @@ public class JwtService {
         @Value("${jwt.expiration}")
         private long jwtExpiration;
 
-        // Generate the token as before
+        // Generate the token
         public String generateToken(Benutzer benutzer) {
             Map<String, Object> claims = new HashMap<>();
             claims.put("benutzername", benutzer.getBenutzername());
