@@ -136,12 +136,3 @@ async function handleReturnClick(equipmentId) {
         alert(error.message); // Display the backend error message
     }
 }
-
-// Debounce function to limit the rate of function calls
-function debounce(func, wait) {
-    let timeout;
-    return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-}

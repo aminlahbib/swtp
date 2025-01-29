@@ -31,9 +31,8 @@ export function removeInvalidState(fieldId) {
 
 export function decodeToken(token) {
     try {
-        const [header, payload, signature] = token.split('.');
-        const decodedPayload = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-        return decodedPayload;
+        const payload = token.split('.')[1];
+        return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
     } catch (error) {
         console.error("Failed to decode token:", error);
         return null;

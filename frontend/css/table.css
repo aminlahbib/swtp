@@ -1,17 +1,22 @@
 .table-container {
     margin-top: 20px;
+    overflow-x: auto;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    table-layout: fixed;
 }
 
 table th, table td {
-    padding: 12px;
+    padding: 12px 30px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 table th {
@@ -23,11 +28,30 @@ table tr:hover {
     background-color: #f1f1f1;
 }
 
+table th:nth-child(1),
+table td:nth-child(1) {
+    width: 30%;
+}
+
+table th:nth-child(2),
+table td:nth-child(2) {
+    width: 50%;
+}
+
+table th:nth-child(3),
+table td:nth-child(3) {
+    width: 20%;
+    text-align: center;
+}
+
 .btn-borrow, .btn-return {
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
+    display: inline-block;
+    text-align: center;
+    min-width: 80px;
 }
 
 .btn-borrow {

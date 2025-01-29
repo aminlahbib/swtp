@@ -1,3 +1,5 @@
+import { decodeToken } from './utilities.js';
+
 window.onload = function() {
     const hash = window.location.hash.substring(1);
     const path = hash.split("/");
@@ -27,11 +29,19 @@ window.onload = function() {
 }
 
 export function loadPage(path) {
-    // console.log("Loading page:", path); // Debugging
-    if (path == "") return;
+    if (path === "") return;
 
-    if (sessionStorage.getItem("authentication_token") === null && path !== "register" && path !== "login") {
-        // console.log("Unauthenticated access, redirecting to @login");
+    const token = sessionStorage.getItem("authentication_token");
+    if (token) {
+        const decodedToken = decodeToken(token);
+        if (decodedToken && decodedToken.exp * 1000 < Date.now()) {
+            // Token is expired
+            sessionStorage.removeItem("authentication_token");
+            path = "login"; // Redirect to login page
+        }
+    }
+
+    if (token === null && path !== "register" && path !== "login") {
         path = "login";
     }
 
@@ -41,7 +51,6 @@ export function loadPage(path) {
     request.send();
     request.onload = function() {
         if (request.status == 200) {
-            // console.log("Template loaded successfully:", path);
             container.innerHTML = request.responseText;
             document.title = "Equipment Management | " + path;
             loadJS(path);
@@ -56,7 +65,6 @@ function loadJS(route) {
     let scriptTags = Array.from(document.getElementsByTagName("script"));
     scriptTags.forEach(function(scriptTag) {
         if(scriptTag.id !== id && scriptTag.id !== 'router') {
-            // Only try to remove if the script has a parent node
             if(scriptTag.parentNode) {
                 scriptTag.parentNode.removeChild(scriptTag);
             }

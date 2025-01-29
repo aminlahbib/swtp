@@ -1,8 +1,21 @@
+import { loadPage } from './router.js' ;
+import { decodeToken } from './utilities.js';
+
 const baseUrl = "http://localhost:8080/api/benutzer";
 
-// Helper function to get the authorization token
 function getAuthorizationToken() {
-    return "Bearer " + sessionStorage.getItem("authentication_token");
+    const token = sessionStorage.getItem("authentication_token");
+    if (token) {
+        const decodedToken = decodeToken(token);
+        if (decodedToken && decodedToken.exp * 1000 < Date.now()) {
+            // Token is expired
+            sessionStorage.removeItem("authentication_token");
+            loadPage("login"); // Redirect to login page
+            throw new Error("Session expired. Please log in again.");
+        }
+        return "Bearer " + token;
+    }
+    return null;
 }
 
 // Login User
