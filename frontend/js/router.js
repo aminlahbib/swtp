@@ -1,10 +1,10 @@
 window.onload = function() {
-    const hash = window.location.hash.substring(1); // Remove the "#"
+    const hash = window.location.hash.substring(1);
     const path = hash.split("/");
     // console.log("Hash Path:", path); // Debugging
 
     // Redirect the user
-    switch(path[0]) { // Use path[0] instead of path[1]
+    switch(path[0]) {
         case "":
         case "equipments-dashboard":
             // console.log(`${path[0] || 'Root'} path detected`);
