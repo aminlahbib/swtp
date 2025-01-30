@@ -1,9 +1,11 @@
 package com.equipment.service;
 
 import com.equipment.exception.EquipmentException;
+import com.equipment.model.Benutzer;
 import com.equipment.model.Equipment;
 import com.equipment.model.LogItem;
 import com.equipment.repository.AusleiheRepository;
+import com.equipment.repository.BenutzerRepository;
 import com.equipment.repository.EquipmentRepository;
 import com.equipment.repository.LogItemRepository;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,13 @@ public class AdminService {
     private final EquipmentRepository equipmentRepository;
     private final AusleiheRepository ausleiheRepository;
     private final LogItemRepository logItemRepository;
+    private final BenutzerRepository benutzerRepository;
 
-    public AdminService(EquipmentRepository equipmentRepository, AusleiheRepository ausleiheRepository, LogItemRepository logItemRepository) {
+    public AdminService(EquipmentRepository equipmentRepository, AusleiheRepository ausleiheRepository, LogItemRepository logItemRepository, BenutzerRepository benutzerRepository) {
         this.equipmentRepository = equipmentRepository;
         this.ausleiheRepository = ausleiheRepository;
         this.logItemRepository = logItemRepository;
+        this.benutzerRepository = benutzerRepository;
     }
 
     @Transactional
@@ -69,5 +73,41 @@ public class AdminService {
         } catch (Exception e) {
             throw EquipmentException.badRequest("Error loading loan history: " + e.getMessage());
         }
+    }
+
+    public List<Benutzer> getAllBenutzer() {
+        try {
+            return benutzerRepository.findAll();
+        } catch (Exception e) {
+            throw EquipmentException.badRequest("Error loading Users List: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void deleteUser(Integer benutzerId) {
+        if (!benutzerRepository.existsById(benutzerId)) {
+            throw EquipmentException.notFound("User not found");
+        }
+
+        // Check if the user has active loans
+        boolean hasActiveLoans = ausleiheRepository.existsByBenutzerId(benutzerId);
+        if (hasActiveLoans) {
+            throw EquipmentException.badRequest("User cannot be deleted because they have active loans.");
+        }
+
+        try {
+            benutzerRepository.deleteById(benutzerId);
+        } catch (Exception e) {
+            throw EquipmentException.badRequest("Error deleting user: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void deleteEquipment(Integer equipmentId) {
+        // Check if the equipment exists
+        if (!equipmentRepository.existsById(equipmentId)) {
+            throw EquipmentException.notFound("equipment with inventarnummer " + equipmentId + " not found.");
+        }
+        equipmentRepository.deleteById(equipmentId);
     }
 } 
