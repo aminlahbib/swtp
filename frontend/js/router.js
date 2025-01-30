@@ -11,12 +11,16 @@ window.onload = function() {
         case "equipments-dashboard":
             // console.log(`${path[0] || 'Root'} path detected`);
             if(sessionStorage.getItem("authentication_token") === null) {
-            //    console.log("No token found, redirecting to @login");
+                //    console.log("No token found, redirecting to @login");
                 loadPage("login");
             } else {
                 // console.log("Token found, loading equipment dashboard");
                 loadPage("equipments-dashboard");
             }
+            break;
+        case "forgot-password":
+            // Handle the forgot-password route
+            loadPage("forgot-password");
             break;
         default:
             // console.log("Unknown path, loading 404");
@@ -25,7 +29,7 @@ window.onload = function() {
     }
 
     // Add sign out method to sign out link.
-    document.getElementById('sign-out-navlink').addEventListener('click', signOut);
+    document.getElementById('sign-out-navlink')?.addEventListener('click', signOut);
 }
 
 export function loadPage(path) {
@@ -41,7 +45,7 @@ export function loadPage(path) {
         }
     }
 
-    if (token === null && path !== "register" && path !== "login") {
+    if (token === null && path !== "register" && path !== "login" && path !== "forgot-password") {
         path = "login";
     }
 

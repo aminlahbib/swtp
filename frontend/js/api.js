@@ -126,3 +126,14 @@ export async function returnEquipment(equipmentId) {
         return response;
     });
 }
+
+// Reset Password
+export async function resetPassword(username, newPassword) {
+    return fetch(baseUrl + "/reset-password", { // Ensure the correct backend port
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ benutzername: username, newPassword })
+    });
+}

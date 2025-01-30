@@ -1,8 +1,7 @@
 package com.equipment.service;
 
-import com.equipment.dto.AuthRequest;
-import com.equipment.dto.AuthResponse;
-import com.equipment.dto.RegisterRequest;
+import com.equipment.dto.*;
+import com.equipment.exception.EquipmentException;
 import com.equipment.model.Benutzer;
 import com.equipment.repository.BenutzerRepository;
 import com.equipment.security.JwtService;
@@ -12,7 +11,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.util.Optional;
 
 //@Slf4j
 @Service
@@ -98,5 +99,27 @@ public class BenutzerService {
         String passwordWithSalt = password + new String(salt);
         // Compare the combined value with the stored hash
         return passwordEncoder.matches(passwordWithSalt, new String(storedHash));
+    }
+
+    public AuthReset resetPassword(ResetPasswordRequest request) {
+        Benutzer benutzer = benutzerRepository.findByBenutzername(request.getBenutzername())
+                .orElseThrow(() -> {
+                    log.debug("User not found: {}", request.getBenutzername());
+                    return new BadCredentialsException("Invalid credentials");
+                });
+
+        // Generate a new salt
+        byte[] newSalt = generateSalt();
+
+        // Hash the new password with the salt using the same method as registration
+        byte[] newHashedPassword = hashPassword(request.getNewPassword(), newSalt);
+
+        // Update both hash and salt
+        benutzer.setPasswordHash(newHashedPassword);
+        benutzer.setPasswordSalt(newSalt);
+
+        benutzerRepository.save(benutzer);
+
+        return new AuthReset("Password reset successfully.");
     }
 }

@@ -1,4 +1,4 @@
-#login-container {
+#login-container, #forgot-password-container{
     max-width: 400px;
     margin: 50px auto;
     padding: 30px;
@@ -16,7 +16,7 @@
 
 
 
-#username-container, #password-container, #first-name-container, #last-name-container {
+#username-container, #password-container, #first-name-container, #last-name-container, #new-password-container {
     margin-bottom: 20px;
     width: 93%;
 }
@@ -39,7 +39,7 @@
     margin-top: 10px;
 }
 
-#username, #password, #last-name, #first-name {
+#username, #password, #last-name, #first-name, #new-password {
     width: 100%;
     padding: 12px;
     border: 1px solid #ccc;

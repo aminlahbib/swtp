@@ -1,8 +1,6 @@
 package com.equipment.controller;
 
-import com.equipment.dto.AuthRequest;
-import com.equipment.dto.AuthResponse;
-import com.equipment.dto.RegisterRequest;
+import com.equipment.dto.*;
 import com.equipment.service.BenutzerService;
 import com.equipment.service.AusleiheService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +28,17 @@ public class BenutzerController {
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             AuthResponse response = benutzerService.register(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            // Handle the exception and return a 409 Conflict response
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        try {
+            AuthReset response = benutzerService.resetPassword(request);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             // Handle the exception and return a 409 Conflict response

@@ -6,8 +6,8 @@ document.getElementById('login-script').onload = function () {
     hideNavbar();
 
     document.getElementById('submit').addEventListener("click", login);
+    document.getElementById("forgot-password-button").addEventListener("click", redirectToRPassword);
     document.getElementById("register-button").addEventListener("click", redirectToRegister);
-
     // Add event listeners to remove invalid state when the user corrects the input
     document.getElementById("username").addEventListener("input", () => removeInvalidState("username"));
     document.getElementById("password").addEventListener("input", () => removeInvalidState("password"));
@@ -51,8 +51,9 @@ async function login() {
     }
 }
 
-function redirectToRegister() {
-    loadPage("register");
+function redirectToRegister() {loadPage("register");}
+function redirectToRPassword() {
+    loadPage("forgot-password")
 }
 
 function validateLoginForm(username, password) {
