@@ -31,9 +31,8 @@ services:
       - loan-network
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: ./frontend
+    container_name: loan_frontend
     ports:
       - "8081:80"
     environment:
