@@ -7,7 +7,7 @@ services:
       - loan-network
     cap_add:
       - SYS_NICE
-    restart: always
+    restart: unless-stopped
     ports:
       - "3306:3306"
     healthcheck:

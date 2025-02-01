@@ -1,5 +1,5 @@
 ## Erzeugen und starten der Container
-docker-compose -p equipment_app_v2.0 up -d
+docker-compose -p equipment_app up -d
 or just
 docker compose up -d
 
